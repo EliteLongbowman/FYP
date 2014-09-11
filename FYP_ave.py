@@ -23,6 +23,7 @@ SPICS = 5
 # Constants
 COUNT_MAX = 200
 THRESH = 50
+AVERAGING_PERIOD = 10
 # LCD constants
 LCD_WIDTH = 16    # Maximum characters per line
 LCD_CHR = 1
@@ -35,17 +36,10 @@ E_DELAY = 0.00005
 
 # Variable initialisation
 adcnum = 0
-meta_count = 0
 count = 0
-values = array.array('i')
-sections = array.array('i')
-ave = array.array('i')
-for i in range(COUNT_MAX):
-	values.append(0)
-for i in range(12):
-	sections.append(0)
-for i in range(3):
-	ave.append(0)
+values = np.empty([COUNT_MAX])
+sections = np.empty([12])
+ave = np.empty([3, AVERAGING_PERIOD])
 
 # Mode setting for LCD pins
 wp.pinMode(LCD_E, 1)  # E
@@ -170,53 +164,54 @@ lcd_init()
 
 # Main loop
 while True:
-	if(count < COUNT_MAX):
-		readadc(adcnum, SPICLK, SPIMOSI, SPIMISO, SPICS, count)
-		count += 1
-	else:
-		count = 0
-		broken_out = 0
-		
-		for i in range(COUNT_MAX-1):
-			#print "1: ", values[i+1], "\t2: ", values[i], "\tabs: ", abs(values[i+1]-values[i])
-			if(abs(values[i+1]-values[i]) > THRESH):
-				sections[count] = i+1
-				count += 1
-			if(count > 11):
-				broken_out = 1
-				break
-		if(broken_out):
-			#print "Broken! ", sections
-			max_diff = 0
-			start_section = 0
+	for runs in range(AVERAGING_PERIOD):
+		if(count < COUNT_MAX):
+			readadc(adcnum, SPICLK, SPIMOSI, SPIMISO, SPICS, count)
+			count += 1
+		else:
+			count = 0
+			broken_out = 0
 			
-			for i in range(6):
-				if(sections[i+1]-sections[i] > max_diff):
-					max_diff = sections[i+1]-sections[i]
-					start_section = i+1
-			#print "Broken! ", sections, " Start: ", start_section
-			
-			for i in range(3):
-				diff = sections[start_section+1+2*i]-sections[start_section+2*i]
-				sum = 0
-				for j in range(diff):
-					sum += values[sections[start_section+2*i]+j]
-				ave[i] = sum / diff
+			for i in range(COUNT_MAX-1):
+				#print "1: ", values[i+1], "\t2: ", values[i], "\tabs: ", abs(values[i+1]-values[i])
+				if(abs(values[i+1]-values[i]) > THRESH):
+					sections[count] = i+1
+					count += 1
+				if(count > 11):
+					broken_out = 1
+					break
+			if(broken_out):
+				#print "Broken! ", sections
+				max_diff = 0
+				start_section = 0
 				
-			# Send some test
-			lcd_byte(LCD_LINE_1, LCD_CMD)
-			lcd_string("1:" + str(ave[0]) + " 2:" + str(ave[1]))
-			lcd_byte(LCD_LINE_2, LCD_CMD)
-			lcd_string("3:" + str(ave[2]))
-			print "1:\t", ave[0], "\t2:\t", ave[1], "\t3:\t", ave[2]
+				for i in range(6):
+					if(sections[i+1]-sections[i] > max_diff):
+						max_diff = sections[i+1]-sections[i]
+						start_section = i+1
+				#print "Broken! ", sections, " Start: ", start_section
+				
+				for i in range(3):
+					diff = sections[start_section+1+2*i]-sections[start_section+2*i]
+					sum = 0
+					for j in range(diff):
+						sum += values[sections[start_section+2*i]+j]
+					ave[i] = sum / diff
 					
-			
-		else: 	# Send some test
+				# Send some test
 				lcd_byte(LCD_LINE_1, LCD_CMD)
-				lcd_string("Invalid")
+				lcd_string("1:" + str(ave[0]) + " 2:" + str(ave[1]))
 				lcd_byte(LCD_LINE_2, LCD_CMD)
-				lcd_string("conditions")
-				#print "Invalid lighting conditions!"
-		
-		count = 0
+				lcd_string("3:" + str(ave[2]))
+				print "1:\t", ave[0], "\t2:\t", ave[1], "\t3:\t", ave[2]
+						
+				
+			else: 	# Send some test
+					lcd_byte(LCD_LINE_1, LCD_CMD)
+					lcd_string("Invalid")
+					lcd_byte(LCD_LINE_2, LCD_CMD)
+					lcd_string("conditions")
+					#print "Invalid lighting conditions!"
+			
+			count = 0
 
