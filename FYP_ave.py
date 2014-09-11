@@ -38,10 +38,10 @@ E_DELAY = 0.00005
 # Variable initialisation
 adcnum = 0
 meta_count = 0
-values = np.empty([COUNT_MAX], dtype=int)
-sections = np.empty([12], dtype=int)
-ave = np.empty([3, AVERAGING_PERIOD], dtype=int)
-x0 = np.empty([3], dtype=int)
+values = np.zeros([COUNT_MAX], dtype=int)
+sections = np.zeros([12], dtype=int)
+ave = np.zeros([3, AVERAGING_PERIOD], dtype=int)
+x0 = np.zeros([3], dtype=int)
 
 # Mode setting for LCD pins
 wp.pinMode(LCD_E, 1)  # E
@@ -161,21 +161,24 @@ def readadc(adcnum, clockpin, mosipin, misopin, cspin, count):
 	#print "Analog read =", adcout
 	#return adcout
 	
-def average_average(data)
+def average_average(data):
 	d = np.abs(data - np.median(data))
 	x = data[d < OUTLIER_THRESH]
-	return int(round(np.mean(x)))
+	if(np.any(x)): return int(round(np.mean(x)))
+	else: return 0
 	
 # Initialise display
 lcd_init()
 
 # Main loop
 while True:
-	if(meta_count < AVERAGING_PERIOD):
+	meta_count = 0	
+	while(meta_count < AVERAGING_PERIOD):
 		for count in range(COUNT_MAX):
 			readadc(adcnum, SPICLK, SPIMOSI, SPIMISO, SPICS, count)
 			
 		broken_out = 0
+		count = 0
 		for i in range(COUNT_MAX-1):
 			#print "1: ", values[i+1], "\t2: ", values[i], "\tabs: ", abs(values[i+1]-values[i])
 			if(abs(values[i+1]-values[i]) > THRESH):
@@ -201,7 +204,7 @@ while True:
 				sum = 0
 				for j in range(diff):
 					sum += values[sections[start_section+2*i]+j]
-				ave[i, runs] = sum / diff
+				ave[i, meta_count] = sum / diff
 				
 			meta_count = meta_count + 1
 					
@@ -210,17 +213,25 @@ while True:
 			lcd_string("Invalid")
 			lcd_byte(LCD_LINE_2, LCD_CMD)
 			lcd_string("conditions")
-			#print "Invalid lighting conditions!"
+			print "Invalid lighting conditions!"
 				
 			meta_count = 0
 		
 	for i in range(3):
 		x0[i] = average_average(ave[i, :])
-		
-	# Send some test
-	lcd_byte(LCD_LINE_1, LCD_CMD)
-	lcd_string("1:" + str(x0[0]) + " 2:" + str(x0[1]))
-	lcd_byte(LCD_LINE_2, LCD_CMD)
-	lcd_string("3:" + str(x0[2]))
-	print "1:\t", x0[0], "\t2:\t", x0[1], "\t3:\t", x0[2]
+	
+	if(np.amin(x0) > 0):	
+		# Send some test
+		lcd_byte(LCD_LINE_1, LCD_CMD)
+		lcd_string("1:" + str(x0[0]) + " 2:" + str(x0[1]))
+		lcd_byte(LCD_LINE_2, LCD_CMD)
+		lcd_string("3:" + str(x0[2]))
+		print "1:\t", x0[0], "\t2:\t", x0[1], "\t3:\t", x0[2]
+
+	else:
+		lcd_byte(LCD_LINE_1, LCD_CMD)
+		lcd_string("Unsteady!")
+		lcd_byte(LCD_LINE_2, LCD_CMD)
+		lcd_string("Pls stabilise!")
+		print "Unsteady! Please stabilise."
 
