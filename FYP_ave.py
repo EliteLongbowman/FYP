@@ -14,30 +14,28 @@ LCD_D5 = 14
 LCD_D6 = 12
 LCD_D7 = 3
 
-# Define some device constants
-LCD_WIDTH = 16    # Maximum characters per line
-LCD_CHR = 1
-LCD_CMD = 0
- 
-LCD_LINE_1 = 0x80 # LCD RAM address for the 1st line
-LCD_LINE_2 = 0xC0 # LCD RAM address for the 2nd line 
- 
-# Timing constants
-E_PULSE = 0.00005
-E_DELAY = 0.00005
-
-wp.pinMode(LCD_E, 1)  # E
-wp.pinMode(LCD_RS, 1) # RS
-wp.pinMode(LCD_D4, 1) # DB4
-wp.pinMode(LCD_D5, 1) # DB5
-wp.pinMode(LCD_D6, 1) # DB6
-wp.pinMode(LCD_D7, 1) # DB7
+# Define the ADC pins
+SPICLK = 11
+SPIMISO = 10
+SPIMOSI = 6
+SPICS = 5
 
 # Constants
 COUNT_MAX = 200
 THRESH = 50
+# LCD constants
+LCD_WIDTH = 16    # Maximum characters per line
+LCD_CHR = 1
+LCD_CMD = 0
+LCD_LINE_1 = 0x80 # LCD RAM address for the 1st line
+LCD_LINE_2 = 0xC0 # LCD RAM address for the 2nd line 
+# Timing constants
+E_PULSE = 0.00005
+E_DELAY = 0.00005
 
-# Declarations
+# Variable initialisation
+adcnum = 0
+meta_count = 0
 count = 0
 values = array.array('i')
 sections = array.array('i')
@@ -48,6 +46,20 @@ for i in range(12):
 	sections.append(0)
 for i in range(3):
 	ave.append(0)
+
+# Mode setting for LCD pins
+wp.pinMode(LCD_E, 1)  # E
+wp.pinMode(LCD_RS, 1) # RS
+wp.pinMode(LCD_D4, 1) # DB4
+wp.pinMode(LCD_D5, 1) # DB5
+wp.pinMode(LCD_D6, 1) # DB6
+wp.pinMode(LCD_D7, 1) # DB7
+
+# Mode setting for ADC pins
+wp.pinMode(SPICLK, 1)
+wp.pinMode(SPIMISO, 0)
+wp.pinMode(SPIMOSI, 1)
+wp.pinMode(SPICS, 1)
 
 def lcd_init():
 	# Initialise display
@@ -152,22 +164,11 @@ def readadc(adcnum, clockpin, mosipin, misopin, cspin, count):
 	values[count] = adcout
 	#print "Analog read =", adcout
 	#return adcout
-
-SPICLK = 11
-SPIMISO = 10
-SPIMOSI = 6
-SPICS = 5
-
-wp.pinMode(SPICLK, 1)
-wp.pinMode(SPIMISO, 0)
-wp.pinMode(SPIMOSI, 1)
-wp.pinMode(SPICS, 1)
-
-adcnum = 0
-
+	
 # Initialise display
 lcd_init()
 
+# Main loop
 while True:
 	if(count < COUNT_MAX):
 		readadc(adcnum, SPICLK, SPIMOSI, SPIMISO, SPICS, count)
