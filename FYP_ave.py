@@ -200,10 +200,10 @@ while True:
 					
 				# Send some test
 				lcd_byte(LCD_LINE_1, LCD_CMD)
-				lcd_string("1:" + str(ave[0]) + " 2:" + str(ave[1]))
+				lcd_string("1:" + str(int(ave[0, 0])) + " 2:" + str(int(ave[1,0 ])))
 				lcd_byte(LCD_LINE_2, LCD_CMD)
-				lcd_string("3:" + str(ave[2]))
-				print "1:\t", int(ave[0]), "\t2:\t", int(ave[1]), "\t3:\t", int(ave[2])
+				lcd_string("3:" + str(int(ave[2, 0])))
+				print "1:\t", int(ave[0, 0]), "\t2:\t", int(ave[1, 0]), "\t3:\t", int(ave[2, 0])
 						
 				
 			else: 	# Send some test
