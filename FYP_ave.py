@@ -37,9 +37,9 @@ E_DELAY = 0.00005
 # Variable initialisation
 adcnum = 0
 count = 0
-values = np.empty([COUNT_MAX])
-sections = np.empty([12])
-ave = np.empty([3, AVERAGING_PERIOD])
+values = np.empty([COUNT_MAX], dtype=int)
+sections = np.empty([12], dtype=int)
+ave = np.empty([3, AVERAGING_PERIOD], dtype=int)
 
 # Mode setting for LCD pins
 wp.pinMode(LCD_E, 1)  # E
@@ -203,7 +203,7 @@ while True:
 				lcd_string("1:" + str(ave[0]) + " 2:" + str(ave[1]))
 				lcd_byte(LCD_LINE_2, LCD_CMD)
 				lcd_string("3:" + str(ave[2]))
-				print "1:\t", ave[0], "\t2:\t", ave[1], "\t3:\t", ave[2]
+				print "1:\t", int(ave[0]), "\t2:\t", int(ave[1]), "\t3:\t", int(ave[2])
 						
 				
 			else: 	# Send some test
