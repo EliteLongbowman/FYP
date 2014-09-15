@@ -25,6 +25,7 @@ COUNT_MAX = 200
 THRESH = 50
 OUTLIER_THRESH = 20
 AVERAGING_PERIOD = 10
+CAL_TIME = 10
 # LCD constants
 LCD_WIDTH = 16    # Maximum characters per line
 LCD_CHR = 1
@@ -43,8 +44,8 @@ sections = np.zeros([12], dtype=int)
 ave = np.zeros([3, AVERAGING_PERIOD], dtype=int)
 x0 = np.zeros([3], dtype=int)
 I_cal = np.zeros([6, 3], dtype=int)
-x_cal = np.array([0, 1, 1, 0, 0, 0.5])
-y_cal = np.array([0, 0, 1, 1, 0.5, 0.5])
+x_cal = np.array([0, 1, 1, 0, 0, 0.5], dtype=int)
+y_cal = np.array([0, 0, 1, 1, 0.5, 0.5], dtype=int)
 
 # Mode setting for LCD pins
 wp.pinMode(LCD_E, 1)  # E
@@ -186,7 +187,7 @@ def calibrate(position):
 			break
 			
 	if(broken_out):
-		#print "Broken! ", sections
+		print "Broken! ", sections
 		max_diff = 0
 		start_section = 0
 		
@@ -194,7 +195,7 @@ def calibrate(position):
 			if(sections[i+1]-sections[i] > max_diff):
 				max_diff = sections[i+1]-sections[i]
 				start_section = i+1
-		#print "Broken! ", sections, " Start: ", start_section
+		print "Broken! ", sections, " Start: ", start_section
 		
 		for i in range(3):
 			diff = sections[start_section+1+2*i]-sections[start_section+2*i]
@@ -202,6 +203,7 @@ def calibrate(position):
 			for j in range(diff):
 				sum += values[sections[start_section+2*i]+j]
 			I_cal[position, i] = sum / diff
+		print I_cal
 		return 1
 				
 	else: 	# Send some test
@@ -223,18 +225,21 @@ lcd_byte(LCD_LINE_1, LCD_CMD)
 lcd_string("Calibration!")
 lcd_byte(LCD_LINE_2, LCD_CMD)
 lcd_string("Prepare the rec.")
+time.sleep(5)
 
 passed_cal = 0
 while not passed_cal:
 	passed_cal = 1
 	for i in range(6):
 		lcd_byte(LCD_LINE_1, LCD_CMD)
-		lcd_string("[" + x_cal[i] + ", " + y_cal[i] + "]")
-		for t in range(5):
+		lcd_string("[" + str(x_cal[i]) + ", " + str(y_cal[i]) + "]")
+		for t in range(CAL_TIME+1):
 			lcd_byte(LCD_LINE_2, LCD_CMD)
-			lcd_string((i+1) + "/6, " + (5-i) + "sec")
+			lcd_string(str((i+1)) + "/6, " + str((CAL_TIME-t)) + "sec")
 			time.sleep(1)
-		if(!calibrate(i)):
+		tmp = calibrate(i)
+		print tmp
+		if(tmp==0):
 			passed_cal = 0
 			break
 

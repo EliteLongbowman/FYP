@@ -164,6 +164,7 @@ def readadc(adcnum, clockpin, mosipin, misopin, cspin, count):
 def average_average(data):
 	d = np.abs(data - np.median(data))
 	x = data[d < OUTLIER_THRESH]
+	print x
 	if(np.any(x)): return int(round(np.mean(x)))
 	else: return 0
 	
