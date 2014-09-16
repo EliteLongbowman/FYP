@@ -43,9 +43,9 @@ values = np.zeros([COUNT_MAX], dtype=int)
 sections = np.zeros([12], dtype=int)
 ave = np.zeros([3, AVERAGING_PERIOD], dtype=int)
 x0 = np.zeros([3], dtype=int)
-I_cal = np.zeros([6, 3], dtype=int)
-x_cal = np.array([1, 2, 2, 1, 1, 1.5], dtype=float)
-y_cal = np.array([1, 1, 2, 2, 1.5, 1.5], dtype=float)
+I_cal = np.zeros([7, 3], dtype=int)
+x_cal = np.array([1, 2, 2, 1, 1, 1.5, 1.5], dtype=float)
+y_cal = np.array([1, 1, 2, 2, 1.5, 1.5, 1], dtype=float)
 
 # Mode setting for LCD pins
 wp.pinMode(LCD_E, 1)  # E
@@ -230,12 +230,12 @@ time.sleep(5)
 passed_cal = 0
 while not passed_cal:
 	passed_cal = 1
-	for i in range(6):
+	for i in range(7):
 		lcd_byte(LCD_LINE_1, LCD_CMD)
 		lcd_string("[" + str(x_cal[i]) + ", " + str(y_cal[i]) + "]")
 		for t in range(CAL_TIME+1):
 			lcd_byte(LCD_LINE_2, LCD_CMD)
-			lcd_string(str((i+1)) + "/6, " + str((CAL_TIME-t)) + "sec")
+			lcd_string(str((i+1)) + "/7, " + str((CAL_TIME-t)) + "sec")
 			time.sleep(1)
 		tmp = calibrate(i)
 		print tmp
@@ -243,25 +243,33 @@ while not passed_cal:
 			passed_cal = 0
 			break
 
-cal_array_0 = np.array([[I_cal[0, 0]*x_cal[0], I_cal[0, 1]*x_cal[0], I_cal[0, 0]*y_cal[0], I_cal[0, 1]*y_cal[0], I_cal[0, 0], I_cal[0, 1]],
-				[I_cal[1, 0]*x_cal[1], I_cal[1, 1]*x_cal[1], I_cal[1, 0]*y_cal[1], I_cal[1, 1]*y_cal[1], I_cal[1, 0], I_cal[1, 1]],
-				[I_cal[2, 0]*x_cal[2], I_cal[2, 1]*x_cal[2], I_cal[2, 0]*y_cal[2], I_cal[2, 1]*y_cal[2], I_cal[2, 0], I_cal[2, 1]],
-				[I_cal[3, 0]*x_cal[3], I_cal[3, 1]*x_cal[3], I_cal[3, 0]*y_cal[3], I_cal[3, 1]*y_cal[3], I_cal[3, 0], I_cal[3, 1]],
-				[I_cal[4, 0]*x_cal[4], I_cal[4, 1]*x_cal[4], I_cal[4, 0]*y_cal[4], I_cal[4, 1]*y_cal[4], I_cal[4, 0], I_cal[4, 1]],
-				[I_cal[5, 0]*x_cal[5], I_cal[5, 1]*x_cal[5], I_cal[5, 0]*y_cal[5], I_cal[5, 1]*y_cal[5], I_cal[5, 0], I_cal[5, 1]]])
+cal_array_0 = np.array([[I_cal[0, 0]^2, I_cal[0, 1]^2, I_cal[0, 2]^2, I_cal[0, 0], I_cal[0, 1], I_cal[0, 2], 1],
+						[I_cal[1, 0]^2, I_cal[1, 1]^2, I_cal[1, 2]^2, I_cal[1, 0], I_cal[1, 1], I_cal[1, 2], 1],
+						[I_cal[2, 0]^2, I_cal[2, 1]^2, I_cal[2, 2]^2, I_cal[2, 0], I_cal[2, 1], I_cal[2, 2], 1],
+						[I_cal[3, 0]^2, I_cal[3, 1]^2, I_cal[3, 2]^2, I_cal[3, 0], I_cal[3, 1], I_cal[3, 2], 1],
+						[I_cal[4, 0]^2, I_cal[4, 1]^2, I_cal[4, 2]^2, I_cal[4, 0], I_cal[4, 1], I_cal[4, 2], 1],
+						[I_cal[5, 0]^2, I_cal[5, 1]^2, I_cal[5, 2]^2, I_cal[5, 0], I_cal[5, 1], I_cal[5, 2], 1],
+						[I_cal[6, 0]^2, I_cal[6, 1]^2, I_cal[6, 2]^2, I_cal[6, 0], I_cal[6, 1], I_cal[6, 2], 1]])
 
-cal_array_1 = np.array([[I_cal[0, 0]*x_cal[0], I_cal[0, 2]*x_cal[0], I_cal[0, 0]*y_cal[0], I_cal[0, 2]*y_cal[0], I_cal[0, 0], I_cal[0, 2]],
-				[I_cal[1, 0]*x_cal[1], I_cal[1, 2]*x_cal[1], I_cal[1, 0]*y_cal[1], I_cal[1, 2]*y_cal[1], I_cal[1, 0], I_cal[1, 2]],
-				[I_cal[2, 0]*x_cal[2], I_cal[2, 2]*x_cal[2], I_cal[2, 0]*y_cal[2], I_cal[2, 2]*y_cal[2], I_cal[2, 0], I_cal[2, 2]],
-				[I_cal[3, 0]*x_cal[3], I_cal[3, 2]*x_cal[3], I_cal[3, 0]*y_cal[3], I_cal[3, 2]*y_cal[3], I_cal[3, 0], I_cal[3, 2]],
-				[I_cal[4, 0]*x_cal[4], I_cal[4, 2]*x_cal[4], I_cal[4, 0]*y_cal[4], I_cal[4, 2]*y_cal[4], I_cal[4, 0], I_cal[4, 2]],
-				[I_cal[5, 0]*x_cal[5], I_cal[5, 2]*x_cal[5], I_cal[5, 0]*y_cal[5], I_cal[5, 2]*y_cal[5], I_cal[5, 0], I_cal[5, 2]]])
+#cal_array_0 = np.array([[I_cal[0, 0]*x_cal[0], I_cal[0, 1]*x_cal[0], I_cal[0, 0]*y_cal[0], I_cal[0, 1]*y_cal[0], I_cal[0, 0], I_cal[0, 1]],
+#				[I_cal[1, 0]*x_cal[1], I_cal[1, 1]*x_cal[1], I_cal[1, 0]*y_cal[1], I_cal[1, 1]*y_cal[1], I_cal[1, 0], I_cal[1, 1]],
+#				[I_cal[2, 0]*x_cal[2], I_cal[2, 1]*x_cal[2], I_cal[2, 0]*y_cal[2], I_cal[2, 1]*y_cal[2], I_cal[2, 0], I_cal[2, 1]],
+#				[I_cal[3, 0]*x_cal[3], I_cal[3, 1]*x_cal[3], I_cal[3, 0]*y_cal[3], I_cal[3, 1]*y_cal[3], I_cal[3, 0], I_cal[3, 1]],
+#				[I_cal[4, 0]*x_cal[4], I_cal[4, 1]*x_cal[4], I_cal[4, 0]*y_cal[4], I_cal[4, 1]*y_cal[4], I_cal[4, 0], I_cal[4, 1]],
+#				[I_cal[5, 0]*x_cal[5], I_cal[5, 1]*x_cal[5], I_cal[5, 0]*y_cal[5], I_cal[5, 1]*y_cal[5], I_cal[5, 0], I_cal[5, 1]]])
+#
+#cal_array_1 = np.array([[I_cal[0, 0]*x_cal[0], I_cal[0, 2]*x_cal[0], I_cal[0, 0]*y_cal[0], I_cal[0, 2]*y_cal[0], I_cal[0, 0], I_cal[0, 2]],
+#				[I_cal[1, 0]*x_cal[1], I_cal[1, 2]*x_cal[1], I_cal[1, 0]*y_cal[1], I_cal[1, 2]*y_cal[1], I_cal[1, 0], I_cal[1, 2]],
+#				[I_cal[2, 0]*x_cal[2], I_cal[2, 2]*x_cal[2], I_cal[2, 0]*y_cal[2], I_cal[2, 2]*y_cal[2], I_cal[2, 0], I_cal[2, 2]],
+#				[I_cal[3, 0]*x_cal[3], I_cal[3, 2]*x_cal[3], I_cal[3, 0]*y_cal[3], I_cal[3, 2]*y_cal[3], I_cal[3, 0], I_cal[3, 2]],
+#				[I_cal[4, 0]*x_cal[4], I_cal[4, 2]*x_cal[4], I_cal[4, 0]*y_cal[4], I_cal[4, 2]*y_cal[4], I_cal[4, 0], I_cal[4, 2]],
+#				[I_cal[5, 0]*x_cal[5], I_cal[5, 2]*x_cal[5], I_cal[5, 0]*y_cal[5], I_cal[5, 2]*y_cal[5], I_cal[5, 0], I_cal[5, 2]]])
 
 print cal_array_0
 print cal_array_1
 
-cal_out_0 = np.linalg.solve(cal_array_0, np.zeros([6], dtype=float))				
-cal_out_1 = np.linalg.solve(cal_array_1, np.zeros([6], dtype=float))
+cal_out_0 = np.linalg.solve(cal_array_0, x_cal)				
+cal_out_1 = np.linalg.solve(cal_array_0, y_cal)
 
 print cal_out_0
 print cal_out_1
@@ -316,13 +324,15 @@ while True:
 	for i in range(3):
 		x0[i] = average_average(ave[i, :])
 	
-	if(np.amin(x0) > 0):	
+	if(np.amin(x0) > 0):
+		x = cal_out_0[0]*x0[0]^2+cal_out_0[1]*x0[1]^2+cal_out_0[2]*x0[2]^2+cal_out_0[3]*x0[0]+cal_out_0[4]*x0[1]+cal_out_0[5]*x0[2]+cal_out_0[6]
+		y = cal_out_1[0]*x0[0]^2+cal_out_1[1]*x0[1]^2+cal_out_1[2]*x0[2]^2+cal_out_1[3]*x0[0]+cal_out_1[4]*x0[1]+cal_out_1[5]*x0[2]+cal_out_1[6]
 		# Send some test
 		lcd_byte(LCD_LINE_1, LCD_CMD)
-		lcd_string("1:" + str(x0[0]) + " 2:" + str(x0[1]))
+		lcd_string("[x, y]")
 		lcd_byte(LCD_LINE_2, LCD_CMD)
-		lcd_string("3:" + str(x0[2]))
-		print "1:\t", x0[0], "\t2:\t", x0[1], "\t3:\t", x0[2]
+		lcd_string("[" + str(x) + ", " + str(y) + "]")
+		print "[", x, ", ", y, "] 1:\t", x0[0], "\t2:\t", x0[1], "\t3:\t", x0[2]
 
 	else:
 		lcd_byte(LCD_LINE_1, LCD_CMD)
