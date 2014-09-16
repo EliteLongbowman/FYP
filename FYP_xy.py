@@ -243,13 +243,13 @@ while not passed_cal:
 			passed_cal = 0
 			break
 
-cal_array_0 = np.array([[I_cal[0, 0]^2, I_cal[0, 1]^2, I_cal[0, 2]^2, I_cal[0, 0], I_cal[0, 1], I_cal[0, 2], 1],
-						[I_cal[1, 0]^2, I_cal[1, 1]^2, I_cal[1, 2]^2, I_cal[1, 0], I_cal[1, 1], I_cal[1, 2], 1],
-						[I_cal[2, 0]^2, I_cal[2, 1]^2, I_cal[2, 2]^2, I_cal[2, 0], I_cal[2, 1], I_cal[2, 2], 1],
-						[I_cal[3, 0]^2, I_cal[3, 1]^2, I_cal[3, 2]^2, I_cal[3, 0], I_cal[3, 1], I_cal[3, 2], 1],
-						[I_cal[4, 0]^2, I_cal[4, 1]^2, I_cal[4, 2]^2, I_cal[4, 0], I_cal[4, 1], I_cal[4, 2], 1],
-						[I_cal[5, 0]^2, I_cal[5, 1]^2, I_cal[5, 2]^2, I_cal[5, 0], I_cal[5, 1], I_cal[5, 2], 1],
-						[I_cal[6, 0]^2, I_cal[6, 1]^2, I_cal[6, 2]^2, I_cal[6, 0], I_cal[6, 1], I_cal[6, 2], 1]])
+cal_array_0 = np.array([[pow(I_cal[0, 0], 2), pow(I_cal[0, 1], 2), pow(I_cal[0, 2], 2), I_cal[0, 0], I_cal[0, 1], I_cal[0, 2], 1],
+						[pow(I_cal[1, 0], 2), pow(I_cal[1, 1], 2), pow(I_cal[1, 2], 2), I_cal[1, 0], I_cal[1, 1], I_cal[1, 2], 1],
+						[pow(I_cal[2, 0], 2), pow(I_cal[2, 1], 2), pow(I_cal[2, 2], 2), I_cal[2, 0], I_cal[2, 1], I_cal[2, 2], 1],
+						[pow(I_cal[3, 0], 2), pow(I_cal[3, 1], 2), pow(I_cal[3, 2], 2), I_cal[3, 0], I_cal[3, 1], I_cal[3, 2], 1],
+						[pow(I_cal[4, 0], 2), pow(I_cal[4, 1], 2), pow(I_cal[4, 2], 2), I_cal[4, 0], I_cal[4, 1], I_cal[4, 2], 1],
+						[pow(I_cal[5, 0], 2), pow(I_cal[5, 1], 2), pow(I_cal[5, 2], 2), I_cal[5, 0], I_cal[5, 1], I_cal[5, 2], 1],
+						[pow(I_cal[6, 0], 2), pow(I_cal[6, 1], 2), pow(I_cal[6, 2], 2), I_cal[6, 0], I_cal[6, 1], I_cal[6, 2], 1]])
 
 #cal_array_0 = np.array([[I_cal[0, 0]*x_cal[0], I_cal[0, 1]*x_cal[0], I_cal[0, 0]*y_cal[0], I_cal[0, 1]*y_cal[0], I_cal[0, 0], I_cal[0, 1]],
 #				[I_cal[1, 0]*x_cal[1], I_cal[1, 1]*x_cal[1], I_cal[1, 0]*y_cal[1], I_cal[1, 1]*y_cal[1], I_cal[1, 0], I_cal[1, 1]],
@@ -266,7 +266,7 @@ cal_array_0 = np.array([[I_cal[0, 0]^2, I_cal[0, 1]^2, I_cal[0, 2]^2, I_cal[0, 0
 #				[I_cal[5, 0]*x_cal[5], I_cal[5, 2]*x_cal[5], I_cal[5, 0]*y_cal[5], I_cal[5, 2]*y_cal[5], I_cal[5, 0], I_cal[5, 2]]])
 
 print cal_array_0
-print cal_array_1
+# print cal_array_1
 
 cal_out_0 = np.linalg.solve(cal_array_0, x_cal)				
 cal_out_1 = np.linalg.solve(cal_array_0, y_cal)
@@ -325,8 +325,8 @@ while True:
 		x0[i] = average_average(ave[i, :])
 	
 	if(np.amin(x0) > 0):
-		x = cal_out_0[0]*x0[0]^2+cal_out_0[1]*x0[1]^2+cal_out_0[2]*x0[2]^2+cal_out_0[3]*x0[0]+cal_out_0[4]*x0[1]+cal_out_0[5]*x0[2]+cal_out_0[6]
-		y = cal_out_1[0]*x0[0]^2+cal_out_1[1]*x0[1]^2+cal_out_1[2]*x0[2]^2+cal_out_1[3]*x0[0]+cal_out_1[4]*x0[1]+cal_out_1[5]*x0[2]+cal_out_1[6]
+		x = cal_out_0[0]*pow(x0[0], 2)+cal_out_0[1]*pow(x0[1], 2)+cal_out_0[2]*pow(x0[2], 2)+cal_out_0[3]*x0[0]+cal_out_0[4]*x0[1]+cal_out_0[5]*x0[2]+cal_out_0[6]
+		y = cal_out_1[0]*pow(x0[0], 2)+cal_out_1[1]*pow(x0[1], 2)+cal_out_1[2]*pow(x0[2], 2)+cal_out_1[3]*x0[0]+cal_out_1[4]*x0[1]+cal_out_1[5]*x0[2]+cal_out_1[6]
 		# Send some test
 		lcd_byte(LCD_LINE_1, LCD_CMD)
 		lcd_string("[x, y]")
