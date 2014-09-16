@@ -44,8 +44,8 @@ sections = np.zeros([12], dtype=int)
 ave = np.zeros([3, AVERAGING_PERIOD], dtype=int)
 x0 = np.zeros([3], dtype=int)
 I_cal = np.zeros([6, 3], dtype=int)
-x_cal = np.array([0, 1, 1, 0, 0, 0.5], dtype=int)
-y_cal = np.array([0, 0, 1, 1, 0.5, 0.5], dtype=int)
+x_cal = np.array([1, 2, 2, 1, 1, 1.5], dtype=float)
+y_cal = np.array([1, 1, 2, 2, 1.5, 1.5], dtype=float)
 
 # Mode setting for LCD pins
 wp.pinMode(LCD_E, 1)  # E
@@ -257,13 +257,14 @@ cal_array_1 = np.array([[I_cal[0, 0]*x_cal[0], I_cal[0, 2]*x_cal[0], I_cal[0, 0]
 				[I_cal[4, 0]*x_cal[4], I_cal[4, 2]*x_cal[4], I_cal[4, 0]*y_cal[4], I_cal[4, 2]*y_cal[4], I_cal[4, 0], I_cal[4, 2]],
 				[I_cal[5, 0]*x_cal[5], I_cal[5, 2]*x_cal[5], I_cal[5, 0]*y_cal[5], I_cal[5, 2]*y_cal[5], I_cal[5, 0], I_cal[5, 2]]])
 
-cal_out_0 = np.linalg.solve(cal_array_0, np.zeros([6], dtype=int))				
-cal_out_1 = np.linalg.solve(cal_array_1, np.zeros([6], dtype=int))
+print cal_array_0
+print cal_array_1
+
+cal_out_0 = np.linalg.solve(cal_array_0, np.zeros([6], dtype=float))				
+cal_out_1 = np.linalg.solve(cal_array_1, np.zeros([6], dtype=float))
 
 print cal_out_0
 print cal_out_1
-print cal_array_0
-print cal_array_1
 
 # Main loop
 while True:
