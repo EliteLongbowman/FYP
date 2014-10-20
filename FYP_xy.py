@@ -50,7 +50,7 @@ meta_count = 0
 
 # Array initialisation
 values = np.zeros([COUNT_MAX], dtype=int)
-sections = np.zeros([12], dtype=int)
+sections = np.zeros([16], dtype=int)
 ave = np.zeros([3, AVERAGING_PERIOD], dtype=int)
 x0 = np.zeros([3], dtype=int)
 I_cal = np.zeros([7, 3], dtype=int)
@@ -192,7 +192,7 @@ def calibrate(position):
 		if(abs(values[i+1]-values[i]) > THRESH):
 			sections[count] = i+1
 			count += 1
-		if(count > 13):
+		if(count > 15):
 			broken_out = 1
 			break
 	
@@ -212,13 +212,16 @@ def calibrate(position):
 		# Find the intensities
 		for i in range(4):
 			diff = sections[start_section+1+2*i]-sections[start_section+2*i]
+			print "Diff: ", diff
 			sum = 0
 			for j in range(diff):
 				sum += values[sections[start_section+2*i]+j]
-			if(!i):
+			if(i==0):
 				zero_lvl = sum / diff
+				print "Zero lvl: ", zero_lvl
 			else:
 				I_cal[position, i-1] = sum / diff - zero_lvl
+				print "Read: ", sum, ", ", sum / diff, ", ", I_cal[position, i-1]
 		print I_cal
 		return 1
 	
@@ -292,7 +295,7 @@ while True:
 			if(abs(values[i+1]-values[i]) > THRESH):
 				sections[count] = i+1
 				count += 1
-			if(count > 13):
+			if(count > 15):
 				broken_out = 1
 				break
 		
@@ -314,7 +317,7 @@ while True:
 				sum = 0
 				for j in range(diff):
 					sum += values[sections[start_section+2*i]+j]
-				if(!i):
+				if(i==0):
 					zero_lvl = sum / diff
 				else:
 					ave[i-1, meta_count] = sum / diff - zero_lvl
