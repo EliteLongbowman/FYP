@@ -192,7 +192,7 @@ def calibrate(position):
 		if(abs(values[i+1]-values[i]) > THRESH):
 			sections[count] = i+1
 			count += 1
-		if(count > 11):
+		if(count > 13):
 			broken_out = 1
 			break
 	
@@ -203,19 +203,22 @@ def calibrate(position):
 		start_section = 0
 		
 		# Find the sections in the signal
-		for i in range(6):
+		for i in range(8):
 			if(sections[i+1]-sections[i] > max_diff):
 				max_diff = sections[i+1]-sections[i]
 				start_section = i+1
 		print "Broken! ", sections, " Start: ", start_section
 		
 		# Find the intensities
-		for i in range(3):
+		for i in range(4):
 			diff = sections[start_section+1+2*i]-sections[start_section+2*i]
 			sum = 0
 			for j in range(diff):
 				sum += values[sections[start_section+2*i]+j]
-			I_cal[position, i] = sum / diff
+			if(!i):
+				zero_lvl = sum / diff
+			else:
+				I_cal[position, i-1] = sum / diff - zero_lvl
 		print I_cal
 		return 1
 	
@@ -289,7 +292,7 @@ while True:
 			if(abs(values[i+1]-values[i]) > THRESH):
 				sections[count] = i+1
 				count += 1
-			if(count > 11):
+			if(count > 13):
 				broken_out = 1
 				break
 		
@@ -299,19 +302,22 @@ while True:
 			max_diff = 0
 			start_section = 0
 			
-			for i in range(6):
+			for i in range(8):
 				if(sections[i+1]-sections[i] > max_diff):
 					max_diff = sections[i+1]-sections[i]
 					start_section = i+1
 			#print "Broken! ", sections, " Start: ", start_section
 			
 			# Find the average of each of the sections to represent that section
-			for i in range(3):
+			for i in range(4):
 				diff = sections[start_section+1+2*i]-sections[start_section+2*i]
 				sum = 0
 				for j in range(diff):
 					sum += values[sections[start_section+2*i]+j]
-				ave[i, meta_count] = sum / diff
+				if(!i):
+					zero_lvl = sum / diff
+				else:
+					ave[i-1, meta_count] = sum / diff - zero_lvl
 				
 			meta_count = meta_count + 1
 					
