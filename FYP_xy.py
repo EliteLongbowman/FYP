@@ -27,10 +27,10 @@ OUTLIER_THRESH = 20
 AVERAGING_PERIOD = 10
 CAL_TIME = 10
 X_MIN = 0
-X_MAX = 10
+X_MAX = 8
 X_MID = (X_MAX - X_MIN) / 2
 Y_MIN = 0
-Y_MAX = 10
+Y_MAX = 8
 Y_MID = (Y_MAX - Y_MIN) / 2
 
 # LCD constants
